@@ -9,6 +9,9 @@ package prj1;
  */
 public class DijkstrasWithoutHeap {
 
+   private int n;
+   
+    private static int[][] graph;
     /**
      * Constructor of the class
      * 
@@ -21,10 +24,45 @@ public class DijkstrasWithoutHeap {
      *            end-points of the i-th edge and edges[i][2] is its weight
      */
     public DijkstrasWithoutHeap(int n, int[][] edges) {
-       
+  
+   
+graph = new int [n][n];
+for (int i = 0; i < edges.length; i++) {
 
-        // TODO complete
+int u = edges[i][0];
+int v = edges[i][1];
+int w = edges[i][2];
+}
+int[] distance = new int[n];
+boolean[] visted = new boolean[n];
+
+    for (int i = 0; i< n; i++)
+    {
+       visted[i] = false; 
+    distance[i] = Integer.MAX_VALUE;
+    
     }
+
+
+}
+
+public void minDistance(int[] distance, boolean visted) 
+{
+    visted = true;
+   distance[0] = 0;
+    int infinity = Integer.MAX_VALUE;
+    for (int v = 0 ; v < n; v++)
+    if (!distance[u]
++ graph[u][v] > distance[v])
+        
+        {
+        distance[n] = distance[u] + graph[u][n];
+            }
+            
+}
+
+
+    
 
 
     /**
