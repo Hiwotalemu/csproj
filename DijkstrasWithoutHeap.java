@@ -1,5 +1,9 @@
 package prj1;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 /**
  * The implementation of Dijkstras shortest path algorithm by using a simple
  * linear search to find the unvisited node with the minimum distance estimate
@@ -8,10 +12,13 @@ package prj1;
  * @version 1.1
  */
 public class DijkstrasWithoutHeap {
+    // stores edges
+    private int[][] nodes;
+    // stores all the node's statuses
+    private boolean[] visited;
+    // stores distance
+    private int[] distances;
 
-   private int n;
-   
-    private static int[][] graph;
     /**
      * Constructor of the class
      * 
@@ -24,45 +31,70 @@ public class DijkstrasWithoutHeap {
      *            end-points of the i-th edge and edges[i][2] is its weight
      */
     public DijkstrasWithoutHeap(int n, int[][] edges) {
-  
-   
-graph = new int [n][n];
-for (int i = 0; i < edges.length; i++) {
+        // TODO complete
+// nodes = new int[edges.length][3];
+// for(int i = 0; i < edges.length; i++) {
+// nodes[i] = edges[i];
+//// nodes[i][0] = edges[i][0];
+//// nodes[i][1] = edges[i][1];
+//// nodes[i][2] = edges[i][2];
+// Scanner sc = new Scanner(System.in);
+//
+// int N = sc.nextInt();
+// int M = sc.nextInt();
+// int Q = sc.nextInt();
+// int vertices = 1;
+        List<List<int[]>> adjacent = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            adjacent.add(new ArrayList<>());
+        }
 
-int u = edges[i][0];
-int v = edges[i][1];
-int w = edges[i][2];
-}
-int[] distance = new int[n];
-boolean[] visted = new boolean[n];
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int w = edge[2];
+            adjacent.get(u).add(new int[] { v, w });
+            adjacent.get(v).add(new int[] { u, w });
+        }
+        // adjency list
 
-    for (int i = 0; i< n; i++)
-    {
-       visted[i] = false; 
-    distance[i] = Integer.MAX_VALUE;
-    
+        // creates distance array and visited array
+        visited = new boolean[n];
+        distances = new int[n];
+        for (int i = 0; i < n; i++) {
+            distances[i] = Integer.MAX_VALUE;
+            visited[i] = false;
+        }
     }
 
 
-}
+    /**
+     * This method finds all the neighbors of the node being inspected.
+     * 
+     * @param v
+     * 
+     * @return returns a list of all neighboring nodes
+     */
 
-public void minDistance(int[] distance, boolean visted) 
-{
-    visted = true;
-   distance[0] = 0;
-    int infinity = Integer.MAX_VALUE;
-    for (int v = 0 ; v < n; v++)
-    if (!distance[u]
-+ graph[u][v] > distance[v])
-        
-        {
-        distance[n] = distance[u] + graph[u][n];
+    private ArrayList<int[]> neighbors(int v) {
+        ArrayList<int[]> neighbors = new ArrayList<int[]>();
+        int neighbors_length = -1;
+        for (int i = 0; i < nodes.length; i++) {
+            if (nodes[i][0] == v || nodes[i][1] == v) {
+                neighbors.add(nodes[i]);
+                neighbors_length++;
+
+                if (nodes[i][1] == v) {
+                    // this is just to keep the code consistent
+                    int temp = neighbors.get(neighbors_length)[1];
+                    neighbors.get(neighbors_length)[1] = neighbors.get(
+                        neighbors_length)[0];
+                    neighbors.get(neighbors_length)[0] = temp;
+                }
             }
-            
-}
-
-
-    
+        }
+        return neighbors;
+    }
 
 
     /**
@@ -76,8 +108,57 @@ public void minDistance(int[] distance, boolean visted)
      *         of node i from the source
      */
     public int[] run(int source) {
-        // TODO Complete
-        return null;
-    }
 
+        // distance from original source to source will always be 0
+        distances[source - 1] = 0;
+        visited[source - 1] = true;
+
+        // Priority queue with nodes directly next to source node
+        ArrayList<int[]> priority_queue = new ArrayList<int[]>();
+        priority_queue = this.neighbors(source);
+        int u = source;
+
+        // loops while priority queue has elements
+        while (priority_queue.size() > 0) {
+            // finds minimum value and node that produced minimum value
+            int v = priority_queue.get(0)[1];
+            int min_value = priority_queue.get(0)[2];
+            int index = 0;
+            for (int i = 1; i < priority_queue.size(); i++) {
+                int node_value = priority_queue.get(i)[2];
+                if (min_value > node_value) {
+                    min_value = node_value;
+                    v = priority_queue.get(i)[1];
+                    index = i;
+                }
+            }
+
+            // removes that edge from the queue
+            priority_queue.remove(priority_queue.get(index));
+
+            // runs if minimum node has not been visited
+            if (visited[v - 1] == false) {
+                visited[v - 1] = true;
+                distances[v - 1] = min_value;
+                ArrayList<int[]> v_neighbors = this.neighbors(v);
+                for (int i = 0; i < v_neighbors.size(); i++) {
+                    if (visited[v_neighbors.get(i)[1] - 1] == false) {
+                        int distance = v_neighbors.get(i)[2];
+                        v_neighbors.get(i)[2] = distances[v - 1] + distance;
+                        priority_queue.add(v_neighbors.get(i));
+                    }
+                }
+            }
+            u = v;
+
+        }
+        // Any value that is still Integer.MAXVALUE in the distance array means
+        // that the node is not connected
+        for (int d = 0; d < distances.length; d++) {
+            if (distances[d] == Integer.MAX_VALUE) {
+                distances[d] = -1;
+            }
+        }
+        return distances;
+    }
 }
